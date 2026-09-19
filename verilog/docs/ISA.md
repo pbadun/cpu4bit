@@ -20,18 +20,19 @@ The core uses two states:
 FETCH -> EXECUTE -> FETCH
 ```
 
-During FETCH, `mem_addr` is the current PC, `mem_data` is loaded into IR, and PC is incremented. Therefore, a relative branch uses the address of the following instruction as its base. All PC arithmetic wraps at 8 bits.
+During FETCH, `mem_addr` is the current PC, `mem_data` is loaded into IR, and PC is incremented. Therefore, a relative
+branch uses the address of the following instruction as its base. All PC arithmetic wraps at 8 bits.
 
 ## Registers
 
-| Register | Width | Description |
-| --- | ---: | --- |
-| PC | 8 bits | Address of the instruction being fetched |
-| IR | 8 bits | Instruction currently being executed |
-| R0 | 4 bits | General-purpose register and default I/O source |
-| R1 | 4 bits | General-purpose register |
-| C | 1 bit | ADD carry or SUB borrow |
-| V | 1 bit | Signed arithmetic overflow |
+| Register |  Width | Description                                     |
+|----------|-------:|-------------------------------------------------|
+| PC       | 8 bits | Address of the instruction being fetched        |
+| IR       | 8 bits | Instruction currently being executed            |
+| R0       | 4 bits | General-purpose register and default I/O source |
+| R1       | 4 bits | General-purpose register                        |
+| C        |  1 bit | ADD carry or SUB borrow                         |
+| V        |  1 bit | Signed arithmetic overflow                      |
 
 Reset sets PC, IR, R0, R1, C, V, and the halted state to zero. PORT0 and PORT1 output registers are also cleared.
 
@@ -70,24 +71,24 @@ The immediate or operand is always `instruction[3:0]`. The upper four bits are n
 
 ## Opcode table
 
-| Opcode | Mnemonic | Operation |
-| ---: | --- | --- |
-| `0x0` | `NOP` | No operation |
-| `0x1` | `LDI0` | `R0 = instruction[3:0]` |
-| `0x2` | `LDI1` | `R1 = instruction[3:0]` |
-| `0x3` | `ADD` | `R0 = R0 + R1`; update C and V |
-| `0x4` | `SUB` | `R0 = R0 - R1`; update C and V |
-| `0x5` | `AND` | `R0 = R0 & R1` |
-| `0x6` | `XOR` | `R0 = R0 ^ R1` |
-| `0x7` | `JMP` | `PC = PC + signed(operand)` |
-| `0x8` | `JC` | Branch to `PC + signed(operand)` when C is 1 |
-| `0x9` | `JV` | Branch to `PC + signed(operand)` when V is 1 |
-| `0xA` | `IN` | Load the selected input port into R0 |
-| `0xB` | `OUT` | Write R0 to the selected output port |
-| `0xC` | `MOV01` | `R0 = R1` |
-| `0xD` | `MOV10` | `R1 = R0` |
-| `0xE` | `HALT` | Stop fetching and hold all state |
-| `0xF` | `RESERVED` | Treated as `NOP` |
+| Opcode | Mnemonic   | Operation                                    |
+|-------:|------------|----------------------------------------------|
+|  `0x0` | `NOP`      | No operation                                 |
+|  `0x1` | `LDI0`     | `R0 = instruction[3:0]`                      |
+|  `0x2` | `LDI1`     | `R1 = instruction[3:0]`                      |
+|  `0x3` | `ADD`      | `R0 = R0 + R1`; update C and V               |
+|  `0x4` | `SUB`      | `R0 = R0 - R1`; update C and V               |
+|  `0x5` | `AND`      | `R0 = R0 & R1`                               |
+|  `0x6` | `XOR`      | `R0 = R0 ^ R1`                               |
+|  `0x7` | `JMP`      | `PC = PC + signed(operand)`                  |
+|  `0x8` | `JC`       | Branch to `PC + signed(operand)` when C is 1 |
+|  `0x9` | `JV`       | Branch to `PC + signed(operand)` when V is 1 |
+|  `0xA` | `IN`       | Load the selected input port into R0         |
+|  `0xB` | `OUT`      | Write R0 to the selected output port         |
+|  `0xC` | `MOV01`    | `R0 = R1`                                    |
+|  `0xD` | `MOV10`    | `R1 = R0`                                    |
+|  `0xE` | `HALT`     | Stop fetching and hold all state             |
+|  `0xF` | `RESERVED` | Treated as `NOP`                             |
 
 ## Instruction formats
 
@@ -109,7 +110,8 @@ HALT       1110 xxxx
 RESERVED   1111 xxxx
 ```
 
-`xxxx` is ignored for register-register, branch, MOV, and HALT instructions. For IN and OUT, only port values 0 and 1 are valid. Other port values are treated as NOP.
+`xxxx` is ignored for register-register, branch, MOV, and HALT instructions. For IN and OUT, only port values 0 and 1
+are valid. Other port values are treated as NOP.
 
 ## Relative branches
 
@@ -126,7 +128,8 @@ The displacement is the signed two's-complement value of the low four instructio
 0xF = -1
 ```
 
-The PC has already been incremented during FETCH. For example, a `JMP +2` fetched at address `0x10` is executed with PC equal to `0x11`, so the resulting PC is `0x13`.
+The PC has already been incremented during FETCH. For example, a `JMP +2` fetched at address `0x10` is executed with PC
+equal to `0x11`, so the resulting PC is `0x13`.
 
 ## I/O
 
@@ -137,7 +140,8 @@ operand 0 -> PORT0
 operand 1 -> PORT1
 ```
 
-IN samples the selected input port while its instruction is executed. OUT writes R0 to the selected output register on the clock edge that executes the instruction. Output registers retain their values until another valid OUT or reset.
+IN samples the selected input port while its instruction is executed. OUT writes R0 to the selected output register on
+the clock edge that executes the instruction. Output registers retain their values until another valid OUT or reset.
 
 ## Example machine-code program
 
@@ -164,7 +168,9 @@ PORT0 = 9
 halted = 1
 ```
 
-The source technical specification prints `MOV01` in this control program while requiring `R1 = 9`. Because the ISA explicitly defines `MOV01` as `R0 = R1`, that printed sequence would finish with `R0 = R1 = 1`. The executable program above uses `MOV10`, which is the instruction that copies R0 to R1 and satisfies the stated final state.
+The source technical specification prints `MOV01` in this control program while requiring `R1 = 9`. Because the ISA
+explicitly defines `MOV01` as `R0 = R1`, that printed sequence would finish with `R0 = R1 = 1`. The executable program
+above uses `MOV10`, which is the instruction that copies R0 to R1 and satisfies the stated final state.
 
 ## Example relative branch
 
