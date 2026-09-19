@@ -66,7 +66,7 @@ From this directory, compile and run directly with Icarus Verilog:
 
 ```sh
 mkdir -p sim
-iverilog -g2012 -Wall -s tb_cpu -o sim/cpu_sim rtl/alu.v rtl/decoder.v rtl/cpu.v tb/tb_cpu.v
+iverilog -g2005 -Wall -s tb_cpu -o sim/cpu_sim rtl/alu.v rtl/decoder.v rtl/cpu.v tb/tb_cpu.v
 vvp sim/cpu_sim
 ```
 

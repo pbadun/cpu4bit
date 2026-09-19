@@ -134,6 +134,19 @@ initial begin
     errors = 0;
     clear_memory();
 
+    // Reset state check.
+    reset_dut();
+    check8(8'd0, pc, "reset PC");
+    check8(8'd0, ir, "reset IR");
+    check4(4'd0, r0, "reset R0");
+    check4(4'd0, r1, "reset R1");
+    check_bit(1'b0, c, "reset C");
+    check_bit(1'b0, v, "reset V");
+    check_bit(1'b0, halted, "reset halted");
+    check4(4'd0, port0_out, "reset PORT0 output");
+    check4(4'd0, port1_out, "reset PORT1 output");
+    pass("Reset state");
+
     // Test 1: LDI0 and LDI1.
     clear_memory();
     putb(8'd0, 8'h15);
